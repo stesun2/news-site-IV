@@ -1,154 +1,110 @@
-# News Site Part III
+# News Site Part IV
 
 ## High Level Objectives
 
- 1. Create a JavaScript module that handles retrieving article data from an API using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch).
- 2. Integrate the module above into the News Site app.
- 3. Slightly refactor the Nav & ArticleDetails components 
+ 1. Build the Section Page - a page that displays articles for a specific section.
+ 2. Create article search feature on Home Page 
 
 ## Initial Setup
 
-You will want to copy over the work you've done in the two previous News Site challenges.  **Be sure to not overwrite the test files in these folder - you want to only copy and paste the component JS files.** The files you'll want to copy to this new codebase are:
-
- - src/App.js
- - src/components/Article/Article.js
- - src/components/ArticleList/ArticleList.js
- - src/components/ArticleTeaser/ArticleTeaser.js
- - src/components/Nav/Nav.js
- - src/pages/HomePage.js
- - src/pages/ArticlePage.js
+You will want to copy over the work you did in the News Site III challenge into this repo - this time, you can copy and paste the entire `src` directory from the news-site-III repo and paste it directly into this repo.
 
 Once you've copied over these files, run ```npm run start``` - verify that no errors appear in your browser console or terminal, and that your app functions the same as it did in the last challenge.
 
-## The News/Article API
-So far, the data that drives our News Site has been contained within a static JSON file - ./src/data/news.json.  We will now begin connecting our front-end to an API/web service that provides news data.  This API is included in this codebase.  When you run ```npm run start```, the React development environment will function as usual - this web service will also boot up, though.  For today, there are two endpoints you will use:
+## The Section Page
+The Section Page will be used to display articles that belong to a specific section (specifically, "Opinion", "World", "National",  or "Business").  The Section Page should be loaded when a user clicks on one of these options in the top navigation.  
 
-**http://localhost:3001/api/articles**
-This endpoint returns a list of articles.  Articles can be filtered by any property through a request parameter called "filter".  The value of the filter request parameter should be set to a JSON string that resembles the following (where [filteredkey] is the key you want to filter an article object by, and [filteredvalue] is the corresponding value:
+The route that should display a section page should be `/section/:sectionID`, where the :sectionID parameter would be one of the supported sections (listed above).  For example, Clicking on the "World" link in the top navigation would redirect to http://localhost:3000/section/world - this page would only display articles whose "section" property is set to "world".
 
-```
-{
-  "where": {
-    "[filteredkey]": "[filteredvalue]"
-  }
-}
-```
+To accomplish this, you will need to:
 
-A true example of the filter object would look like this:
+ 1. Create SectionPage.js inside of src/pages
+ 2. Define the route /section/:sectionID to point to SectionPage.js
+ 3. Within SectionPage.js, utilize the fetchArticlesBySection(section) function you created in the News Site III challenge to retrieve articles by a specific section, and store the response in state - in this.state.articles.
+ 4. Pass this.state.articles into the `<ArticleList>` component, thereby rendering the Article List with articles for the desired section.
 
-```
-{
-  "where": {
-    "byline": "By DAVID ZUCCHINO"
-  }
-}
-```
-The URL to the API that corresponds to the example above would look like this: [http://localhost:3001/api/articles/?filter={%22where%22:{%22byline%22:%22By%20ALISON%20SMALE%22}}](http://localhost:3001/api/articles/?filter={%22where%22:{%22byline%22:%22By%20ALISON%20SMALE%22}})
+**Tip 1: SectionPage.js is going to be almost identical to HomePage.js.  Consider copying the code from HomePage.js and pasting it into SectionPage.js, and adjusting it per the specifications above.**
+**Tip 2: Typically, we put calls to fetch data in the componentDidMount() method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in componentDidMount() will not occur again - the SectionPage, at this point, has been and is mounted.  Instead, you will need to hook into the componentDidUpdate() method and add your fetch request here.**
 
-----------
-**[http://localhost:3001/api/articles/[articleID]](http://localhost:3001/api/articles/1)**
+While developing, attempt to load http://localhost:3000/sections/world - once this page is displaying the correct content, you may proceed.
 
-Individual Article objects can be retrieved with the URL above.  The Article ID is a number, an corresponds to the unique index of the article as it exists in the database.  
+## Section Links in Nav.js
 
-## src/api/ArticleAPI.js
+In the current iteration of Nav.js, the component accepts a function prop called handleNavClick - the function provided via that prop is called when one of the Nav Items/Section links is clicked.  Ultimately, we were going to use this functionality to redirect/link to the section pages, but there is a better way.  We can simply use the Link component that react-router provides to us to create the link button.
 
-The ArticleAPI.js JavaScript module's primary function is to handle making requests to the API described in the previous section.  This module already contains a few functions that are stubbed out - you must complete them.
+ 1. Delete the handleNavClick prop that's being passed into the Nav component in App.js
+ 2. Remove references to it in Nav.js
+ 3. In Nav.js, modify the array of nav items that we're creating by mapping through the array that we're importing from config/Sections.js:
 
-The functions are:
+Before: 
 
- - fetchArticleByID(id) - given an article ID, returns a Promise of an Article object with the given ID.  
- - fetchArticles(filters) - returns a list of articles.  The filters argument is optional - if no filters are provided, a Promise of an array of Articles is returned.  If filters are provided, a Promise of Articles that meet the criteria are returned. 
- - fetchArticlesBySection(section) - returns a Promise of a list of articles whose 'section' attribute matches the section argument.
+    const navItems = this.props.navItems.map((navItem, index) => {
+      return <NavItem id={index} onClick={this._handleClick.bind(this, navItem.value)} key={navItem.label} href='#'>{navItem.label}</NavItem>
+    })
 
-Example usages of ArticleAPI.js (once you complete the functionality described above) are:
+After:
 
-    ArticleAPI.fetchArticleByID(1).then(function(article) {
-      console.log(article.title) // will print out "Going Home to Falluja, a City Slipping Back Into Turmoil"
-      console.log(article.byline) // will print out "By DAVID ZUCCHINO"
+    const navItems = sections.map((navItem, index) => {
+      return (
+        <li key={index}><Link to={`/section/${navItem.value}`}>{navItem.label}</Link></li>
+      );
     });
 
-    ArticleAPI.fetchArticles().then(function(articles) {
-      console.log(articles.length) // will print out 40
-      console.log(articles[0].title) // will print out "Going Home to Falluja, a City Slipping Back Into Turmoil"
-    });
+Within Nav.js, you will also need to modify the node/element that contains the navItems variable.  Previously, navItems was being placed inside of a Bootstrap `<Nav>` element:
 
-    ArticleAPI.fetchArticlesBySection('opinion').then(function(articles) {
-      console.log(articles[0].title) // will print out "French Farmer Who Aided Migrants Is Given Suspended Fine"
-    });
+    <Nav>
+      {navItems}  
+    </Nav>
 
-A Unit Test that asserts this functionality can be found alongside ArticleAPI.js - it's named ArticleAPI.test.js.  
+You will want to replace the `<Nav>` component used here with a simple `<ul>`:
 
-**Success Criteria:**  If ArticleAPI's unit tests succeed (the tests in ArticleAPI.test.js), you are done.
+    <ul className="nav navbar-nav">
+      {navItems}
+    </ul>
 
-Note:  Other tests may currently be failing - you can ignore these for now.  After running ```npm run test```, you can have the test runner ignore these files, also.  Use the 'p' option to filter tests by a regex pattern - enter ArticleAPI.
+Why did we do all of this?  React Router's `<Link>` component cannot be used inside React Bootstrap's `<NavItem>` component, and vice versa.  The benefit of using `<NavItem>` was purely cosmetic - it provided styling to our navigation elements.  Using React Router's `<Link>` component reduced complexity in our app - we no longer had to worry about passing callback functions around through props in order to change the page.  The styling that React Bootstrap's `<NavItem>` component provided was also easily recreatable - by structuring markup and adding CSS classes, we could manually achieve the same styling.
 
-## Integrating ArticleAPI.js into your App
+Once these changes are complete, you should be able to successfully navigate to Section Pages using the top navigation.
 
-At the moment, there are two components that use Article data - src/pages/HomePage and src/pages/ArticlePage.  In these components, we're importing the src/data/news.json (which contains an array of Articles) and either passing it down directly (in the case of HomePage.js) or taking an Article out of the array and passing it down (in the case of ArticlePage.js).  Let's modify these pages to use data from the API instead.  
+## Article Search
 
-In React, you typically fire calls to APIs in the componentDidMount method.  Example:
+Let's add the ability to search for articles on the Home Page.  In order to accomplish this, the high-level things we need to build are:
 
-    class Component extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          someDataFromAnAPI: null
+ 1. Add a new function in src/api/ArticlesAPI.js that accepts a search term, constructs a filter object using that search term, and then fetches data from the API
+ 2. Add an input box to the src/pages/HomePage component that calls the function above, and updates state.
+
+**ArticlesAPI.js**
+
+Create a new method in ArticlesAPI.js called searchArticles(text).  **This function should be almost identical to fetchArticlesBySection** - the only difference is the filter object that's included in the request.
+
+The filter object that can be used to return articles from the API that contain text looks like this:
+
+    {
+      where: {
+        title: {
+          ilike: textToSearchFor
         }
-      }
-      componentDidMount() {
-        CallAPI().then((apiResponseJSON) => {
-          this.setState({
-            someDataFromAnAPI: apiResponseJSON
-          });
-        });
-      }
-      render() {
-        return <ChildComponent data={this.state.someDataFromAnAPI} />
       }
     }
 
-Let's first examine the constructor - here, we're just initializing *this.state*.  State contains a someDataFromAnAPI key.  When the component is initialized, it's null.  
+As with fetchArticlesBySection(), searchArticles() should return a Fetch promise.
 
-In componentDidMount, we're calling a function (CallAPI()) on an object (similar to ArticleAPI.js) that presumably fires a request to a web service.  CallAPI() returns a promise, which we then attach a callback function to via the then() method.  The callback function inside of the then() method takes the data that's ultimately returned from the web service request, and stores it into *this.state* via this.setState().  
+**HomePage.js**
 
-Calling this.setState triggers the rendering process - at this point, render() is called again.  Subsequently, the ChildComponent contained within the render() function re-renders - it's *data* prop is set to this.state.someDataFromAnAPI, which now contains the data that was returned from the API/Web Service - which then is, presumably, used to render content.
+As mentioned above, you will want to add a text input to the Home Page.  Why not use React Bootstrap's nicely styled text input?  
 
-You will want to follow this pattern within src/pages/HomePage.js and src/pages/ArticlePage.js and remove references in these files to src/data/news.json
+    <FormGroup>
+      <FormControl onChange={this.handleSearch.bind(this)} type="text" placeholder="Search" />
+    </FormGroup>
 
-**Success Criteria:**  HomePage.js and ArticlePage.js should utilize the ArticleAPI.js module to fetch data from the Article API, and then display that data.
+Note that I've provided the method that should be called from the onChange event - it's a class method called handleSearch().  Create this class method on the HomePage.js component.  Within this event handler, you should (a) extract the value of the text input, (b) call ArticlesAPI.searchArticles(textToSearchFor), and then (c) call this.setState() and set the json returned from the API to the "articles" object within your state object.  
 
-## Refactoring!
+    handleSearch(event) {
+      const textToSearchFor = event.target.value;
+      // Add call to ArticlesAPI.searchArticles
+      // and subsequently the code to 
+      // put the results from that call into
+      // state.
+    }
 
-Programming is iterative - changes happen.  Ways to simplify our app have been idenfified, and it is up to you to implement these changes.
-
-**Nav Component & Section Data**
-
-At the moment, the data that determines what appears in the main navigation is contained with App.js's state.  Your product managers have decided that the news sections that we present on the site will never change - that said, we can remove this data from App.js's state, move the data into a JSON file in our codebase, and import it directly into Nav.js.
-
-The JSON file has already been created - src/config/sections.json.  
-
- 1. Import src/config/sections.json into Nav.js and use it to construct the navigation, and remove 
- 2. The navItems object in App.js's state is no longer needed, and that's the only piece of data in state.  That said, we can remove App.js's constructor entirely.
-
-**ArticleTeaser Link**
-At the moment, we're passing down a callback function from HomePage.js to ArticleList.js to ArticleTeaser.js that handles redirection when the title in ArticleTeaser is clicked.  This logic was overly and unnecessarily complicated.  
-
-Instead, we can just utilize React Router's `<Link>` component in ArticleTeaser.js.  Using this, we can remove the callback function that's set in HomePage.js and passed down to ArticleList.js - remove these.
-
-**Refactoring Success Criteria:**  Unit tests have already been reconfigured to account for these changes.  Once you've completed them successfully, all unit tests should pass.  In addition, ensure that no ESLint warnings appear in your browser console (they will appear with a yellow background). 
-
-## Updates
-
-1) If you're getting an error running ```npm run test```, run ```brew install watchman```.  
-2) There was a small bug in src/api/ArticlesAPI.test.js.  This file has been updated in this repo.  If you've already forked this repo, you can simply copy this file from this repo and overwrite the version in your fork.
-3) The functions in ArticlesAPI.js should return a value (a Promise, specifically).  An example of this could look something like this:
-
-```
-const foo = () => {
-  return fetch('https://jsonplaceholder.typicode.com/posts/1')
-      .then((response) => response.json())
-}
-
-foo().then((json) => console.log(json))
-```
-4) In the information provided above about how to construct a API 'filter', the filter object that's created is a JavaScript.  When you make a request and want to include this object, you would need to convert it into a string.  JavaScript objects can be converted into strings using [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
+If these steps are completed successfully, the list of articles displayed on the home page should change as you interact with the text box.
