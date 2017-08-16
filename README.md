@@ -31,7 +31,7 @@ While developing, attempt to load **http://localhost:3000/sections/world** - onc
 
 ## Section Links in App`AppNav.js`
 
-In the current iteration of `AppNav.js`, the component accepts a function prop called `handleNavClic` - the function provided via that prop is called when one of the Nav Items/Section links is clicked.  Ultimately, we were going to use this functionality to redirect/link to the section pages, but there is a better way.  We can simply use the `Link` component that `react-router` provides to us to create the link button.
+In the current iteration of `AppNav.js`, the component accepts a function prop called `handleNavClick` - the function provided via that prop is called when one of the Nav Items/Section links is clicked.  Ultimately, we were going to use this functionality to redirect/link to the section pages, but there is a better way.  We can simply use the `Link` component that `react-router` provides to us to create the link button.
 
  1. Delete the `handleNavClick` prop that's being passed into the `AppNav` component in `App.js`
  2. Remove references to it in `AppNav.js`
@@ -50,7 +50,7 @@ After:
   ```
   const navItems = sections.map((navItem, index) => {
     return (
-      <li key={index}><Link to={`/section/${navItem.value}`}>{navItem.label}</Link></li>
+      <li key={index}><Link to={`/sections/${navItem.value}`}>{navItem.label}</Link></li>
     );
   });
   ```
@@ -91,7 +91,7 @@ The filter object that can be used to return articles from the API that contain 
   {
     where: {
       title: {
-        like: textToSearchFor
+        ilike: textToSearchFor
       }
     }
   }
