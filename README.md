@@ -83,7 +83,7 @@ The filter object that can be used to return articles from the API that contain 
     {
       where: {
         title: {
-          ilike: textToSearchFor
+          like: textToSearchFor
         }
       }
     }
