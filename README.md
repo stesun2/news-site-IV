@@ -14,7 +14,7 @@ Once you've copied over these files, run `npm run start` - verify that no errors
 ## The Section Page
 The Section Page will be used to display articles that belong to a specific section (specifically, "Opinion", "World", "National",  or "Business").  The Section Page should be loaded when a user clicks on one of these options in the top navigation.
 
-The route that should display a section page should be `/section/:sectionID`, where the :sectionID parameter would be one of the supported sections (listed above).  For example, Clicking on the "World" link in the top navigation would redirect to http://localhost:3000/section/world - this page would only display articles whose "section" property is set to "world".
+The route that should display a section page should be `/sections/:sectionID`, where the :sectionID parameter would be one of the supported sections (listed above).  For example, Clicking on the "World" link in the top navigation would redirect to http://localhost:3000/section/world - this page would only display articles whose "section" property is set to "world".
 
 To accomplish this, you will need to:
 
