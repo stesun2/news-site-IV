@@ -23,9 +23,9 @@ To accomplish this, you will need to:
  3. Within `SectionPage.js`, utilize the `fetchArticlesBySection(section)` function you created in the News Site III challenge to retrieve articles by a specific section, and store the response in state - in `this.state.articles`.
  4. Pass `this.state.articles` into the `<ArticleList>` component, thereby rendering the `ArticleList` with articles for the desired section.
 
-**Tip 1: `SectionPage.js` is going to be almost identical to `HomePage.js`.  Consider copying the code from `HomePage.js` and pasting it into `SectionPage.js`, and adjusting it per the specifications above.**
+**Tip 1:** `SectionPage.js` is going to be almost identical to `HomePage.js`.  Consider copying the code from `HomePage.js` and pasting it into `SectionPage.js`, and adjusting it per the specifications above.
 
-**Tip 2: Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here.**
+**Tip 2:** Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here.
 
 While developing, attempt to load **http://localhost:3000/sections/world** - once this page is displaying the correct content, you may proceed.
 
