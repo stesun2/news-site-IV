@@ -17,7 +17,7 @@ The route that should display a section page should be `/sections/:sectionID`, w
 To accomplish this, you will need to:
 
 1. Create `SectionPage.js` inside of `src/pages`
-2. Define the route `/section/:sectionID` to point to `SectionPage.js`
+2. Define the route `/sections/:sectionID` to point to `SectionPage.js`
 3. Within `SectionPage.js`, utilize the `fetchArticlesBySection(section)` function you created in the News Site III challenge to retrieve articles by a specific section, and store the response in state - in `this.state.articles`.
 4. Pass `this.state.articles` into the `<ArticleList>` component, thereby rendering the `ArticleList` with articles for the desired section.
 
