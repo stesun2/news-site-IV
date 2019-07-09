@@ -12,7 +12,7 @@ Once you've copied over these files, run `npm install ; npm run start` - verify 
 ## The Section Page
 The Section Page will be used to display articles that belong to a specific section (specifically, "Opinion", "World", "National",  or "Business").  The Section Page should be loaded when a user clicks on one of these options in the top navigation.
 
-The route that should display a section page should be `/sections/:sectionID`, where the :sectionID parameter would be one of the supported sections (listed above).  For example, Clicking on the "World" link in the top navigation would redirect to http://localhost:3000/section/world - this page would only display articles whose "section" property is set to "world".
+The route that should display a section page should be `/sections/:sectionID`, where the `:sectionID` parameter would be one of the supported sections (listed above).  For example, Clicking on the "World" link in the top navigation would redirect to http://localhost:3000/sections/world - this page would only display articles whose "section" property is set to "world".
 
 To accomplish this, you will need to:
 
@@ -21,14 +21,11 @@ To accomplish this, you will need to:
 3. Within `SectionPage.js`, utilize the `fetchArticlesBySection(section)` function you created in the News Site III challenge to retrieve articles by a specific section, and store the response in state - in `this.state.articles`.
 4. Pass `this.state.articles` into the `<ArticleList>` component, thereby rendering the `ArticleList` with articles for the desired section.
 
-**Tip 1:** `SectionPage.js` is going to be almost identical to `HomePage.js`.  Consider copying the code from `HomePage.js` and pasting it into `SectionPage.js`, and adjusting it per the specifications above.
-
-**Tip 2:** Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here. You'll need to add a condition in this function to avoid an infinite loop. Check out the docs on `componentDidUpdate()` [here](https://reactjs.org/docs/react-component.html). 
+**Tip:** `SectionPage.js` is going to be almost identical to `HomePage.js`.  Consider copying the code from `HomePage.js` and pasting it into `SectionPage.js`, and adjusting it per the specifications above.
 
 While developing, attempt to load **http://localhost:3000/sections/world** - once this page is displaying the correct content, you may proceed.
 
 ## Section Links in App`AppNav.js`
-
 In the current iteration of `AppNav.js`, the component accepts a function prop called `handleNavClick` - the function provided via that prop is called when one of the Nav Items/Section links is clicked.  Ultimately, we were going to use this functionality to redirect/link to the section pages, but there is a better way.  We can simply use the `Link` component that `react-router` provides to us to create the link button.
 
  1. Delete the `handleNavClick` prop that's being passed into the `AppNav` component in `App.js`
@@ -48,7 +45,7 @@ After:
 ```javascript
 const navItems = NavItems.map((navItem, index) => {
   return (
-    <li key={index}><Link to={`/sections/${navItem.value}`}>{navItem.label}</Link></li>
+    <b key={index}><Link to={`/sections/${navItem.value}`}>{navItem.label}</Link></b>
   );
 });
 ```
@@ -59,24 +56,9 @@ const navItems = NavItems.map((navItem, index) => {
 import { Link } from 'react-router-dom';
 ```
 
-Within `AppNav.js`, you will also need to modify the node/element that contains the `navItems` variable.  Previously, `navItems` was being placed inside of a Bootstrap `<Nav>` element:
-
-```javascript
-<Nav>
-  {navItems}  
-</Nav>
-```
-
-You will want to replace the `<Nav>` component used here with a simple `<ul>`:
-```javascript
-<ul className="nav navbar-nav">
-  {navItems}
-</ul>
-```
-
-Why did we do all of this?  React Router's `<Link>` component cannot be used inside React Bootstrap's `<NavItem>` component, and vice versa.  The benefit of using `<NavItem>` was purely cosmetic - it provided styling to our navigation elements.  Using React Router's `<Link>` component reduced complexity in our app - we no longer had to worry about passing callback functions around through props in order to change the page.  The styling that React Bootstrap's `<NavItem>` component provided was also easily recreatable - by structuring markup and adding CSS classes, we could manually achieve the same styling.
-
 Once these changes are complete, you should be able to successfully navigate to Section Pages using the top navigation.
+
+**Tip:** Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here. You'll need to add a condition in this function to avoid an infinite loop. Check out the docs on `componentDidUpdate()` [here](https://reactjs.org/docs/react-component.html). 
 
 ## Article Search
 
@@ -101,7 +83,7 @@ The filter object that can be used to return articles from the API that contain 
 }
 ```
 
-As with `fetchArticlesBySection()`, `searchArticles()` should return a Fetch promise.
+As with `fetchArticlesBySection()`, `searchArticles()` should be an async/await.
 
 **HomePage.js**
 
@@ -109,7 +91,7 @@ As mentioned above, you will want to add a text input to the HomePage.  Why not 
 
 ```javascript
 <FormGroup>
-  <FormControl onChange={this.handleSearch.bind(this)} type="text" placeholder="Search" />
+  <FormControl onChange={this.handleSearch} type="text" placeholder="Search" />
 </FormGroup>
 ```
 
@@ -123,7 +105,7 @@ handleSearch(event) {
   // put the results from that call into
   // state.
 }
-```
+````
 
 If these steps are completed successfully, the list of articles displayed on the home page should change as you interact with the text box.
 
