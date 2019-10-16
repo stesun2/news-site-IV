@@ -46,14 +46,14 @@ After:
 const navItems = NavItems.map((navItem, index) => {
   return (
     <b key={index}><Link to={`/sections/${navItem.value}`}>{navItem.label}</Link></b>
-  );
-});
+  )
+})
 ```
 
 `Link` is a React library that's part of `react-router-dom`. You will need to add the following line to the top of `AppNav.js`:
 
 ```javascipt
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 ```
 
 Once these changes are complete, you should be able to successfully navigate to Section Pages using the top navigation.
