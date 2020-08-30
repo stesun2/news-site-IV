@@ -2,10 +2,10 @@
 
 ## High Level Objectives
 1. Build the Section Page - a page that displays articles for a specific section.
-2. Create article search feature on Home Page 
+2. Create article search feature on Home Page
 
 ## Initial Setup
-You will want to copy over the work you did in the News Site III challenge into this repo - this time, you can copy and paste the entire `src` directory from the `news-site-III` repo and paste it directly into this repo.
+If you want to use your own code, go ahead and copy the entire `src` directory from your `news-site-III` repo and paste it directly into this repo (replacing the solution code provided here in `src`).
 
 Once you've copied over these files, run `npm install ; npm run start` - verify that no errors appear in your browser console or terminal, and that your app functions the same as it did in the last challenge.
 
@@ -32,7 +32,7 @@ In the current iteration of `AppNav.js`, the component accepts a function prop c
  2. Remove references to it in `AppNav.js`
  3. In `AppNav.js`, modify the array of nav items that we're creating by mapping through the array that we're importing from `config/Sections.js`:
 
-Before: 
+Before:
 
 ```javascript
 const navItems = NavItems.map(
@@ -58,7 +58,7 @@ import { Link } from 'react-router-dom'
 
 Once these changes are complete, you should be able to successfully navigate to Section Pages using the top navigation.
 
-**Tip:** Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here. You'll need to add a condition in this function to avoid an infinite loop. Check out the docs on `componentDidUpdate()` [here](https://reactjs.org/docs/react-component.html). 
+**Tip:** Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here. You'll need to add a condition in this function to avoid an infinite loop. Check out the docs on `componentDidUpdate()` [here](https://reactjs.org/docs/react-component.html).
 
 ## Article Search
 
@@ -101,7 +101,7 @@ Note that I've provided the method that should be called from the `onChange` eve
 handleSearch(event) {
   const textToSearchFor = event.target.value;
   // Add call to ArticlesAPI.searchArticles
-  // and subsequently the code to 
+  // and subsequently the code to
   // put the results from that call into
   // state.
 }
