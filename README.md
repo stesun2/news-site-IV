@@ -28,8 +28,8 @@ While developing, attempt to load **http://localhost:3000/sections/world** - onc
 ## Section Links in `AppNav.js`
 In the current iteration of `AppNav.js`, the component accepts a function prop called `handleNavClick` - the function provided via that prop is called when one of the Nav Items/Section links is clicked.  Ultimately, we were going to use this functionality to redirect/link to the section pages, but there is a better way.  We can simply use the `Link` component that `react-router` provides to us to create the link button.
 
- 1. Delete the `handleNavClick` prop that's being passed into the `AppNav` component in `App.js`
- 2. Remove references to it in `AppNav.js`
+ 1. Delete the `handleNavClick` prop that's being passed into the `AppNav` component in `App.js`. Make sure the `<AppNav />` component is nested under `<Router>`.
+ 2. Remove references to the deprecated method in `AppNav.js`.
  3. In `AppNav.js`, modify the array of nav items that we're creating by mapping through the array that we're importing from `config/Sections.js`. These should now return `<Link>`s.
 
 **Hint:** We're already using `<Link>`s to navigate to individual articles. If you're stuck, take a look at `ArticleTeaser.js`.
