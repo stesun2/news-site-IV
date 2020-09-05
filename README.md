@@ -25,40 +25,20 @@ To accomplish this, you will need to:
 
 While developing, attempt to load **http://localhost:3000/sections/world** - once this page is displaying the correct content, you may proceed.
 
-## Section Links in App`AppNav.js`
+## Section Links in `AppNav.js`
 In the current iteration of `AppNav.js`, the component accepts a function prop called `handleNavClick` - the function provided via that prop is called when one of the Nav Items/Section links is clicked.  Ultimately, we were going to use this functionality to redirect/link to the section pages, but there is a better way.  We can simply use the `Link` component that `react-router` provides to us to create the link button.
 
  1. Delete the `handleNavClick` prop that's being passed into the `AppNav` component in `App.js`
  2. Remove references to it in `AppNav.js`
- 3. In `AppNav.js`, modify the array of nav items that we're creating by mapping through the array that we're importing from `config/Sections.js`:
+ 3. In `AppNav.js`, modify the array of nav items that we're creating by mapping through the array that we're importing from `config/Sections.js`. These should now return `<Link>`s.
 
-Before:
-
-```javascript
-const navItems = NavItems.map(
-  (navItem, index) => <NavItem eventKey={index} onClick={() => this.props.handleNavClick(navItem.value)}>{navItem['label']} </NavItem>
-)
-```
-
-After:
-
-```javascript
-const navItems = NavItems.map((navItem, index) => {
-  return (
-    <b key={index}><Link to={`/sections/${navItem.value}`}>{navItem.label}</Link></b>
-  )
-})
-```
-
-`Link` is a React library that's part of `react-router-dom`. You will need to add the following line to the top of `AppNav.js`:
-
-```javascipt
-import { Link } from 'react-router-dom'
-```
+**Hint:** We're already using `<Link>`s to navigate to individual articles. If you're stuck, take a look at `ArticleTeaser.js`.
 
 Once these changes are complete, you should be able to successfully navigate to Section Pages using the top navigation.
 
-**Tip:** Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here. You'll need to add a condition in this function to avoid an infinite loop. Check out the docs on `componentDidUpdate()` [here](https://reactjs.org/docs/react-component.html).
+**Tip:** Typically, we put calls to fetch data in the `componentDidMount()` method.  You should do that here as well, but there is another scenario to account for.  If you go from one section page to another (e.g. going from "Opinion" to "World"), the fetch call that you made in `componentDidMount()` will not occur again - the `SectionPage`, at this point, has been and is mounted.  Instead, you will need to hook into the `componentDidUpdate()` method and add your fetch request here. You'll need to add a condition in this function to avoid an infinite loop. Check out the docs on `componentDidUpdate()` [here](https://reactjs.org/docs/react-component.html#componentdidupdate).
+
+**Note for Functional Component refactor:** Since `useEffect()` runs on all component updates by default, all of your fetch logic can be contained in one `useEffect()`. Remember that the second paramater of `useEffect()` is an optional array of what state to track/subscribe to. Previously, we've only included one piece of state in this array (`article` in the `ArticlePage` component and `articles` in the `HomePage` component). This time, however, there is a second piece of state that could change: `props.match.params.sectionID`. When writing your `useEffect()` think about the two conditions that should trigger a re-fetching of articles and be sure to include a conditional statement for each one.
 
 ## Article Search
 
@@ -87,15 +67,16 @@ As with `fetchArticlesBySection()`, `searchArticles()` should be an async/await.
 
 **HomePage.js**
 
-As mentioned above, you will want to add a text input to the HomePage.  Why not use React Bootstrap's nicely styled text input? (Remember that you'll need to import all of these new libraries from `react-bootstrap` at the top of your file!)
+As mentioned above, you will want to add a text input to the `HomePage`.  Why not use Reactstrap's nicely styled text input? (Remember that you'll need to import all of these new libraries from `reactstrap` at the top of your file!) Go ahead and put this above your `<ArticleList>` component:
 
 ```javascript
-<FormGroup>
-  <FormControl onChange={this.handleSearch} type="text" placeholder="Search" />
-</FormGroup>
+<InputGroup>
+  <Input onChange={(e) => this.handleSearch(e)} type="text" placeholder="Search" />
+</InputGroup>
 ```
 
-Note that I've provided the method that should be called from the `onChange` event - it's a class method called `handleSearch()`.  Create this class method on the `HomePage.js` component.  Within this event handler, you should (a) extract the value of the text input, (b) call `ArticlesAPI.searchArticles(textToSearchFor)`, and then (c) call `this.setState()` and set the json returned from the API to the "articles" object within your state object.
+Note that we've provided the method that should be called from the `onChange` event - it's a class method called `handleSearch()`. (Javascript note: Here we've chosen to  use an arrow function to preserve the context of `this` in the `handleSearch` method. This can also be accomplished via [bind](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind): `onChange={this.handleSearch.bind(this)}`.)
+Create the `handleSearch()` class method on the `HomePage.js` component.  Within this event handler, you should (a) extract the value of the text input, (b) call `ArticlesAPI.searchArticles(textToSearchFor)`, and then (c) call `this.setState()` and set the json returned from the API to the "articles" object within your state object. Also consider what should happen if a user deletes their search text... we probably shouldn't just leave the page blank. Be sure to handle that use case!
 
 ```javascript
 handleSearch(event) {
@@ -105,9 +86,20 @@ handleSearch(event) {
   // put the results from that call into
   // state.
 }
-````
+```
 
 If these steps are completed successfully, the list of articles displayed on the home page should change as you interact with the text box.
 
+**Note for Functional Component refactor:** Since `useEffect()` can be used to track multiple state changes, let's add another piece of state to the `HomePage` component so that we can track the search text and update the articles accordingly:
+```javascript
+const [ searchText, setSearchText ] = React.useState('');
+```
+Now, all the `handleSearch()` method needs to do is update the search text:
+```javascript
+const handleSearch = (e) => setSearchText(e.target.value);
+```
+Finally, add `searchText` to the array of state that `useEffect()` will track, and update the `useEffect()` method to account for the `searchText`.
+
 ## Next Steps
-There is quite a bit of repeated code and our code base is not organized very well at all! Refactor the code base to something you can be proud of.
+1. Open your `functional-version` branch and refactor away! Be sure to go back to the special **Note**s for functional component refactoring in the previous sections.
+2. There is quite a bit of repeated code and our code base is not organized very well at all! Refactor the code base to something you can be proud of. You can choose to do this in _either_ your master branch OR your `functional-version` branch. Or both if you have time!
