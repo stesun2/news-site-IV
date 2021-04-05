@@ -103,3 +103,9 @@ Finally, add `searchText` to the array of state that `useEffect()` will track, a
 ## Next Steps
 1. Open your `functional-version` branch and refactor away! Be sure to go back to the special **Note**s for functional component refactoring in the previous sections.
 2. There is quite a bit of repeated code and our code base is not organized very well at all! Refactor the code base to something you can be proud of. You can choose to do this in _either_ your master branch OR your `functional-version` branch. Or both if you have time!
+
+## Extended Challenge #1
+Can you extend the search feature to work for the Home or any Section page? *HINT: Consider moving the search input to the AppNav component!*
+
+## Extended Challenge #2
+There is a something bad about our current design for filtering articles. Currently, we're making an API call for **every** character that a user types into the search field. This may seem okay when our total data size is around 40 articles, but imagine what would happen if we had to serve 40,000 articles, or even worse, 40 million articles! Making so many API calls is not the best design, especially if it can be avoided. In this case, there should be a way to cut down the number of API calls we need to make, right? Think about all of the tools we have at our disposal... <ins>can you update the design of News Site so that the filtering functionality is retained, but our total API calls are reduced?</ins>
